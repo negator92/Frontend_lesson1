@@ -91,7 +91,7 @@ const createUploadItem = ({ file, description, guid }, idx) => {
     else if (fileSize < 13)
         sizeEl.innerText = (Math.round(file.size / 1024 / 1024) / 1000).toFixed(2) + ' GB';
     else
-        (Math.round(file.size / 1024 / 1024 / 1024) / 1000).toFixed(2) + ' TB';
+        sizeEl.innerText = (Math.round(file.size / 1024 / 1024 / 1024) / 1000).toFixed(2) + ' TB';
 
     const descriptionEl = document.createElement('div')
     descriptionEl.classList.add('item__description')
