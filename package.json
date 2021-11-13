@@ -1,0 +1,22 @@
+{
+  "name": "frontend_lesson1",
+  "version": "1.0.0",
+  "description": "Html page with file upload, description and validation",
+  "main": "index.js",
+  "dependencies": {
+    "uuid": "^8.3.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/negator92/Frontend_lesson1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/negator92/Frontend_lesson1/issues"
+  },
+  "homepage": "https://github.com/negator92/Frontend_lesson1#readme"
+}
