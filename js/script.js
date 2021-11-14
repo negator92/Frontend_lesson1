@@ -5,7 +5,11 @@ const fileInput = document.getElementById('fileInput')
 const descriptionInput = document.getElementById('descriptionInput')
 const errorMsg = document.getElementById('errorMsg')
 const saveBtn = document.getElementById('saveBtn')
+const uploadsHeaderEl = document.getElementById('uploadsHeaderEl')
 const uploadsEl = document.getElementById('uploadsEl')
+const editorEl = document.getElementById('editorEl')
+const saveDescriptionEl = document.getElementById('saveDescriptionEl')
+const closeEditorBtn = document.getElementById('closeEditorBtn')
 
 const ICONS_DICT = {
     jpeg: 'image',
@@ -25,19 +29,14 @@ saveBtn.addEventListener('click', (e) => {
     const file = fileInput.files[0]
     const description = descriptionInput.value
 
-    if (!(file && description && description?.length < 100)) {
+    if (!(file && description?.length <= 100)) {
         showError()
         return
     }
 
     hideError()
 
-    const guid =
-        Math.ceil(Math.random() * 1e8) + '-'
-        + [0, 0, 0].map(i => Math.ceil(Math.random() * 1e4)).join('-') + '-'
-        + Math.ceil(Math.random() * 1e12)
-
-    uploads.push({ file, description, guid })
+    uploads.push({ file, description, guid: uuidv4() })
     renderUploadsList()
 })
 
@@ -55,7 +54,8 @@ const renderUploadsList = () => {
     uploads.forEach((u, idx) => uploadsEl.append(createUploadItem(u, idx)))
 }
 
-const createUploadItem = ({ file, description, guid }, idx) => {
+const createUploadItem = (upload, idx) => {
+    const { file, description, guid } = upload
     const numberEl = document.createElement('div')
     numberEl.classList.add('item__number')
     numberEl.innerText = idx + 1
@@ -63,100 +63,141 @@ const createUploadItem = ({ file, description, guid }, idx) => {
     const guidEl = document.createElement('div')
     guidEl.classList.add('item__guid')
     guidEl.innerText = guid
+    upload.guid = guid
 
     const iconEl = document.createElement('div')
     iconEl.classList.add('item__icon')
     const icon = document.createElement('img')
     const type = file.name.split('.').pop()?.toLowerCase()
-    icon.src = '../img/' + (ICONS_DICT[type] || 'file') + '.png'
+    const iconSrc = '../img/' + (ICONS_DICT[type] || 'file') + '.png'
+    icon.src = iconSrc
     iconEl.append(icon)
+    upload.iconSrc = iconSrc
 
-    const name = document.createElement('div')
-    name.classList.add('item__name')
-    name.innerText = file.name
+    const nameEl = document.createElement('div')
+    nameEl.classList.add('item__name')
+
+    const linkEl = document.createElement('a')
+    linkEl.setAttribute('download', file.name)
+    linkEl.setAttribute('target', '_blank')
+    linkEl.innerText = file.name
+
+    const dataURLReader = new FileReader()
+    dataURLReader.addEventListener("load", (e) => {
+        const fileURI = e.target.result
+        linkEl.setAttribute('href', fileURI)
+        upload.fileURI = fileURI
+    })
+    dataURLReader.readAsDataURL(file)
+
+    nameEl.append(linkEl)
+    upload.name = file.name
 
     const typeEl = document.createElement('div')
     typeEl.classList.add('item__type')
     typeEl.innerText = file.type
+    upload.type = file.type
 
     const sizeEl = document.createElement('div')
     sizeEl.classList.add('item__size')
-    fileSize = file.size.toString().length
+    const fileSize = file.size.toString().length
+    let sizeString = ''
     if (fileSize < 4)
-        sizeEl.innerText = file.size + ' b';
+        sizeString = file.size + ' b'
     else if (fileSize < 7)
-        sizeEl.innerText = Math.round(file.size / 1024).toFixed(2) + ' Kb';
+        sizeString = Math.round(file.size / 1024).toFixed(2) + ' Kb'
     else if (fileSize < 10)
-        sizeEl.innerText = (Math.round(file.size / 1024) / 1000).toFixed(2) + ' MB';
+        sizeString = (Math.round(file.size / 1024) / 1000).toFixed(2) + ' MB'
     else if (fileSize < 13)
-        sizeEl.innerText = (Math.round(file.size / 1024 / 1024) / 1000).toFixed(2) + ' GB';
+        sizeString = (Math.round(file.size / 1024 / 1024) / 1000).toFixed(2) + ' GB'
     else
-        sizeEl.innerText = (Math.round(file.size / 1024 / 1024 / 1024) / 1000).toFixed(2) + ' TB';
+        sizeString = (Math.round(file.size / 1024 / 1024 / 1024) / 1000).toFixed(2) + ' TB'
+
+    sizeEl.innerText = sizeString
+    upload.size = sizeString
 
     const descriptionEl = document.createElement('div')
     descriptionEl.classList.add('item__description')
     descriptionEl.innerText = description
 
+    const hashEl = document.createElement('div')
+    hashEl.classList.add('item__hash')
+
+    const arrayBufferReader = new FileReader()
+    arrayBufferReader.addEventListener('load', (e) => {
+        const arrayBuffer = e.target.result
+        const hash = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(new Uint8Array(arrayBuffer))) + ' - sha256\n' +
+            SparkMD5.ArrayBuffer.hash(arrayBuffer) + ' - md5'
+        hashEl.innerText = hash
+        upload.hash = hash
+        console.log(hash)
+    })
+    arrayBufferReader.readAsArrayBuffer(file)
+
     const itemEl = document.createElement('div')
     itemEl.classList.add('uploads__item')
+    itemEl.classList.add('row')
     itemEl.classList.add('card')
-
-    const descriptionEditEl = document.createElement('div')
-    descriptionEditEl.classList.add('item__description-editor')
-
-    const input = document.createElement('input')
-    input.placeholder = 'Введите описание'
-    descriptionEditEl.append(input)
-
-    const btn = document.createElement('button')
-    btn.innerText = 'Сохранить'
-
-    input.addEventListener('input', () => {
-        if (input.value.length > 100) {
-            input.classList.add('error')
-            btn.disabled = true
-            return
-        }
-
-        input.classList.remove('error')
-        btn.disabled = false
-    })
-
-    btn.addEventListener('click', (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        const upload = uploads[idx]
-        upload.description = input.value || upload.description
-        descriptionEl.innerText = upload.description
-        itemEl.classList.remove('uploads__item--edited')
-    })
-
-    descriptionEditEl.append(btn)
+    itemEl.dataset.idx = idx
 
     itemEl.append(numberEl)
     itemEl.append(guidEl)
     itemEl.append(iconEl)
-    itemEl.append(name)
+    itemEl.append(nameEl)
     itemEl.append(typeEl)
     itemEl.append(sizeEl)
     itemEl.append(descriptionEl)
-    itemEl.append(descriptionEditEl)
+    itemEl.append(hashEl)
 
     return itemEl
 }
 
-uploadsEl.addEventListener('click', (e) => {
-    const itemEl = e.target.closest('.uploads__item')
+let saveDescriptionHandler
 
-    if (itemEl.classList.contains('uploads__item--edited')) {
+uploadsEl.addEventListener('click', (e) => {
+    const { target } = e
+    if (target.tagName === 'A') {
         return
     }
 
-    itemEl.classList.add('uploads__item--edited')
+    uploadsHeaderEl.style.display = 'none'
+    const itemEl = target.closest('.uploads__item')
+    const { idx } = itemEl.dataset
+    const upload = uploads[idx]
+    const { guid, name, type, iconSrc, size, description, hash, fileURI } = upload
+    uploadsEl.innerHTML = ''
 
-    const descriptionEl = itemEl.querySelector('.item__description')
-    const description = descriptionEl.innerText
-    const descriptionEditEl = itemEl.querySelector('.item__description-editor')
-    const input = descriptionEditEl.querySelector('input')
-    input.value = description
+    editorEl.style.display = 'flex'
+    editorEl.querySelector('#number > p').innerText = idx
+    editorEl.querySelector('#guid > p').innerText = guid
+    editorEl.querySelector('#icon > img').src = iconSrc
+    editorEl.querySelector('#type > p').innerText = type
+    editorEl.querySelector('#size > p').innerText = size
+    editorEl.querySelector('#hash > p').innerText = hash
+
+    const linkEl = editorEl.querySelector('#name > a')
+    linkEl.setAttribute('href', fileURI)
+    linkEl.setAttribute('download', name)
+    linkEl.setAttribute('target', '_blank')
+    linkEl.innerText = name
+
+    const descriptionEditorInput = editorEl.querySelector('#description > textarea')
+    descriptionEditorInput.value = description
+
+    saveDescriptionHandler = () => {
+        if (descriptionEditorInput.value.length > 100) {
+            descriptionEditorInput.style.borderColor = 'red'
+            return
+        }
+        descriptionEditorInput.style.borderColor = null
+        upload.description = descriptionEditorInput.value
+    }
+    saveDescriptionEl.addEventListener('click', saveDescriptionHandler)
+})
+
+closeEditorBtn.addEventListener('click', () => {
+    uploadsHeaderEl.style.display = null
+    editorEl.style.display = null
+    saveDescriptionEl.removeEventListener('click', saveDescriptionHandler)
+    renderUploadsList()
 })

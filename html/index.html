@@ -2,27 +2,111 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File upload</title>
-    <link rel="stylesheet" href="../css/styles.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible"
+        content="IE=edge">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+  <title>File upload</title>
+  <link rel="stylesheet"
+        href="../css/styles.css">
 </head>
 
 <body>
-    <h2>Загрузка файлов</h2>
+<h2>Загрузка файлов</h2>
 
-    <form class="form card" id="form">
-        Загрузка файла: <input type="file" class="form__file-upload" id="fileInput"><br/>
-        Описание файла: <textarea minlength="1" maxlength="100" required type="text" class="form__description" id="descriptionInput"></textarea><br/>
-        <button class="form__save-btn" id="saveBtn">Сохранить</button>
-    </form>
+<form class="form card"
+      id="form">
+  Загрузка файла:
+  <input type="file"
+         class="form__file-upload"
+         id="fileInput">
+  Описание файла:
+  <textarea minlength="1"
+            maxlength="100"
+            required
+            class="form__description"
+            id="descriptionInput"></textarea>
+  <button class="form__save-btn"
+          id="saveBtn">Сохранить
+  </button>
+</form>
 
-    <div class="error-msg" id="errorMsg">Не заполнены обязательные поля</div>
+<div class="error-msg"
+     id="errorMsg">Не заполнены обязательные поля
+</div>
 
-    <div class="uploads" id="uploadsEl"></div>
+<div class="card header row"
+     id="uploadsHeaderEl">
+  <div class="item__number">№</div>
+  <div class="item__guid">GUID</div>
+  <div class="item__icon">Файл</div>
+  <div class="item__name">Название</div>
+  <div class="item__type">Тип</div>
+  <div class="item__size">Размер</div>
+  <div class="item__description">Описание</div>
+  <div class="item__hash">hash</div>
+</div>
 
-    <script src="../js/script.js"></script>
+<div class="uploads"
+     id="uploadsEl">
+</div>
+
+<div class="editor card"
+     id="editorEl">
+  <div class="editor__close-btn"
+       id="closeEditorBtn">&times;
+  </div>
+  <h2>Редактирование</h2>
+  <div class="editor__field"
+       id="number">
+    <h4>№</h4>
+    <p></p>
+  </div>
+  <div class="editor__field"
+       id="guid">
+    <h4>GUID</h4>
+    <p></p>
+  </div>
+  <div class="editor__field"
+       id="icon">
+    <h4>Файл</h4>
+    <img src="">
+  </div>
+  <div class="editor__field"
+       id="name">
+    <h4>Название</h4>
+    <a href=""></a>
+  </div>
+  <div class="editor__field"
+       id="type">
+    <h4>Тип</h4>
+    <p></p>
+  </div>
+  <div class="editor__field"
+       id="size">
+    <h4>Размер</h4>
+    <p></p>
+  </div>
+  <div class="editor__field"
+       id="description">
+    <h4>Описание</h4>
+    <textarea minlength="1"
+              maxlength="100"
+              required></textarea>
+    <button id="saveDescriptionEl">Сохранить</button>
+  </div>
+  <div class="editor__field"
+       id="hash">
+    <h4>hash</h4>
+    <p></p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.2/spark-md5.min.js"></script>
+<script src="http://bitwiseshiftleft.github.io/sjcl/sjcl.js"></script>
+<script src="https://unpkg.com/uuid@latest/dist/umd/uuidv4.min.js"></script>
+<script src="../js/script.js"></script>
 </body>
 
 </html>

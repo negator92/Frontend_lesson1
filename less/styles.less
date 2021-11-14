@@ -18,12 +18,10 @@ form {
 
 textarea {
   display: flex;
-  max-width: fit-content;
-  max-height: fit-content;
   width: 250px;
-  height: 20px;
-  min-width: 250px;
-  min-height: 20px;
+  height: 80px;
+  padding: 8px;
+  resize: none;
   align-items: center;
   justify-content: center;
 }
@@ -60,6 +58,61 @@ textarea {
   align-items: center;
 }
 
+.item__number {
+  flex-basis: 3%;
+}
+
+.item__guid {
+  flex-basis: 27%;
+}
+
+.item__icon {
+  flex-basis: 3%;
+  padding: 12px 4px;
+}
+
+.item__name {
+  flex-basis: 20%;
+}
+
+.item__type {
+  flex-basis: 7%;
+}
+
+.item__size {
+  flex-basis: 5%;
+}
+
+.item__description {
+  flex-basis: 20%;
+}
+
+.item__hash {
+  flex-basis: 15%;
+}
+
+.row {
+  padding: 0;
+  height: 60px;
+  width: 100%;
+  justify-content: space-between;
+  font-size: 12px;
+
+  & > * {
+    padding: 12px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-grow: 1;
+
+    &:not(&:first-child) {
+      border-left: 1px solid #555;
+    }
+  }
+}
+
 .uploads {
   display: flex;
   flex-direction: column;
@@ -67,10 +120,6 @@ textarea {
   width: 100%;
 
   &__item {
-    padding: 0;
-    height: 60px;
-    width: 100%;
-    justify-content: space-between;
     transition: 0.3s;
     cursor: pointer;
 
@@ -78,90 +127,56 @@ textarea {
       box-shadow: 20px 10px 10px #aaa;
     }
 
-    & > * {
-      padding: 12px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      flex-grow: 1;
-
-      &:not(&:first-child) {
-        border-left: 1px solid #555;
-      }
+    .item__icon img {
+      max-width: 100%;
+      max-height: 100%;
     }
+  }
+}
 
-    .item__number {
-      flex-basis: 3%;
+.editor {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  .editor__close-btn {
+    cursor: pointer;
+    font-size: 36px;
+    position: absolute;
+    top: 20px;
+    right: 30px;
+
+    &:hover {
+      opacity: .5;
     }
+  }
 
-    .item__guid {
-      flex-basis: 27%;
-    }
+  .editor__field {
+    width: 100%;
+    display: flex;
+    align-items: center;
 
-    .item__icon {
-      flex-basis: 3%;
-      padding: 12px 4px;
-
-      img {
-        max-width: 100%;
-        max-height: 100%;
-      }
-    }
-
-    .item__name {
-      flex-basis: 20%;
-    }
-
-    .item__type {
-      flex-basis: 7%;
-    }
-
-    .item__size {
-      flex-basis: 5%;
-    }
-
-    .item__description,
-    .item__description-editor {
-      flex-basis: 35%;
-    }
-
-    .item__description-editor {
-      display: none;
-
-      input.error {
-        border: 2px solid red;
-      }
-    }
-
-    &--edited {
-      .item__description {
-        display: none;
-      }
-
-      .item__description-editor {
-        display: flex;
-      }
+    h4 {
+      margin-right: 20px;
     }
   }
 }
 
 @media screen and (max-width: 992px) {
-  .uploads .uploads__item {
+  .uploads .uploads__item,
+  .header {
     .item__guid,
     .item__description {
-      display: none;
-    }
-
-    &-edited .item__description-editor {
       display: none;
     }
   }
 }
 
 @media screen and (max-width: 768px) {
-  .uploads .uploads__item {
+  .uploads .uploads__item,
+  .header {
     .item__type,
     .item__size {
       display: none;
