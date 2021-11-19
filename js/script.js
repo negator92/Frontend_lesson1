@@ -130,7 +130,6 @@ const createUploadItem = (upload, idx) => {
             SparkMD5.ArrayBuffer.hash(arrayBuffer) + ' - md5'
         hashEl.innerText = hash
         upload.hash = hash
-        console.log(hash)
     })
     arrayBufferReader.readAsArrayBuffer(file)
 
